@@ -1,11 +1,12 @@
-var module = angular.module("myUserApp", ['angularUtils.directives.dirPagination','ngRoute','userlist']);
+var module = angular.module("myUserApp", ['angularUtils.directives.dirPagination','ngRoute']);
   module.service('userlist', function ($location, $http) {
-        var uid = 1;
-        var users = [];
-        $http.get('users').then(function(usersResponse) {
-            users = usersResponse.data;
-        });
-            
+        this.getUser = function(){
+          return $http.get('/users').then(function(usersResponse){
+            return usersResponse.data;
+
+          });
+        };
+
         this.delete = function(id){
             for(var i in users){
                 if( users[i].id == id){
@@ -41,8 +42,13 @@ var module = angular.module("myUserApp", ['angularUtils.directives.dirPagination
     });
 
 
+
+
     module.controller('homeCtrl', function($scope, userlist){
-      $scope.users = userlist.list();
+      // $scope.users = userlist.list();
+      userlist.getUser().then(function(response){
+        $scope.users = response;
+      });
       $scope.sort = function(parameter){
       $scope.sortKey = parameter; 
       $scope.reverse = !$scope.reverse;
